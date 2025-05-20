@@ -60,7 +60,7 @@ class GAClustering:
         max_gen: int = 100,
         cross_rate: float = 0.8,
         mut_rate: float = 0.001,
-        random_state: Optional[int] = None
+        random_state: Optional[int] = None,
     ):
         """
         Set attributes.
@@ -123,8 +123,12 @@ class GAClustering:
         population : List[NDArray]
             List of flattened chomosomes
         """
-        return [X[np.random.choice(len(X), self._clusters, replace=False)].flatten()
-                for _ in range(self._pop_size)]
+        return [
+            X[
+                np.random.choice(len(X), self._clusters, replace=False)
+            ].flatten()
+            for _ in range(self._pop_size)
+        ]
 
     def fit(self, X: NDArray) -> None:
         """
@@ -132,7 +136,7 @@ class GAClustering:
 
         Parameters
         ----------
-            X : NDArray 
+            X : NDArray
                 Input data
 
         Returns
@@ -146,18 +150,26 @@ class GAClustering:
         self._population = self._init_population(X)
 
         for _ in range(self._max_gen):
-            fitnesses = np.array([self._fitness(chromo, X) for chromo in self._population])
+            fitnesses = np.array(
+                [self._fitness(chromo, X) for chromo in self._population]
+            )
             elite_idx = np.argmax(fitnesses)
 
             if fitnesses[elite_idx] > self._best_fitness:
                 self._best_fitness = fitnesses[elite_idx]
                 self._best_solution = self._population[elite_idx].copy()
 
-            new_population = [self._best_solution.copy()] if self._best_solution is not None else []
+            new_population = (
+                [self._best_solution.copy()]
+                if self._best_solution is not None
+                else []
+            )
             selected = self._selection(self._population, fitnesses)
 
             while len(new_population) < self._pop_size:
-                p1_idx, p2_idx = np.random.choice(len(selected), 2, replace=False)
+                p1_idx, p2_idx = np.random.choice(
+                    len(selected), 2, replace=False
+                )
                 c1, c2 = self._crossover(selected[p1_idx], selected[p2_idx])
                 new_population.append(self._mutate(c1))
                 if len(new_population) < self._pop_size:
@@ -194,7 +206,9 @@ class GAClustering:
             Predicted cluster labels
         """
         if self._centers is None or self._features is None:
-            raise RuntimeError("Model must be fitted before calling predict().")
+            raise RuntimeError(
+                "Model must be fitted before calling predict()."
+            )
         if X.shape[1] != self._features:
             raise ValueError("Invalid shape of the input data.")
         return pairwise_distances_argmin(X, self._centers)
@@ -214,7 +228,9 @@ class GAClustering:
             Array of shape (clusters, features).
         """
         if self._features is None:
-            raise ValueError("Attribute '_features' must be set before calling _decode().")
+            raise ValueError(
+                "Attribute '_features' must be set before calling _decode()."
+            )
         return chromosome.reshape((self._clusters, self._features))
 
     def _fitness(self, chromosome: NDArray, X: NDArray) -> float:
@@ -233,7 +249,9 @@ class GAClustering:
         dists = np.linalg.norm(X - centers[labels], axis=1)
         return 1.0 / float(np.sum(dists))
 
-    def _selection(self, pop: List[NDArray], fitnesses: NDArray) -> List[NDArray]:
+    def _selection(
+        self, pop: List[NDArray], fitnesses: NDArray
+    ) -> List[NDArray]:
         """
         Select chromosomes for the next generation using roulette wheel selection.
 
@@ -253,10 +271,12 @@ class GAClustering:
         indices = np.random.choice(len(pop), size=len(pop), p=probs)
         return [pop[i].copy() for i in indices]
 
-    def _crossover(self, parent1: NDArray, parent2: NDArray) -> Tuple[NDArray, NDArray]:
+    def _crossover(
+        self, parent1: NDArray, parent2: NDArray
+    ) -> Tuple[NDArray, NDArray]:
         """
         One-point crossover between two parents with defined crossover probability.
-        
+
         Parameters
         ----------
         parent1, parent2 : NDArray
@@ -272,7 +292,7 @@ class GAClustering:
         point = np.random.randint(1, len(parent1))
         return (
             np.concatenate([parent1[:point], parent2[point:]]),
-            np.concatenate([parent2[:point], parent1[point:]])
+            np.concatenate([parent2[:point], parent1[point:]]),
         )
 
     def _mutate(self, chromosome: NDArray) -> NDArray:
@@ -293,7 +313,11 @@ class GAClustering:
             if np.random.rand() < self._mut_rate:
                 d = np.random.rand()
                 sign = 1 if np.random.rand() < 0.5 else -1
-                chromosome[i] += sign * 2 * d * chromosome[i] if chromosome[i] != 0 else sign * 2 * d
+                chromosome[i] += (
+                    sign * 2 * d * chromosome[i]
+                    if chromosome[i] != 0
+                    else sign * 2 * d
+                )
         return chromosome
 
     @property
