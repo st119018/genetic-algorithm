@@ -12,16 +12,16 @@ class GAClustering:
     ----------
         _clusters : int
             Number of clusters (must be ≥ 2).
-        _pop_size : int, default=30
+        _pop_size : int, default=100
             Number of chromosomes in the population (must be > 0).
-        _max_gen : int, default=40
+        _max_gen : int, default=100
             Maximum number of generations (must be > 0).
         _cross_rate : float, default=0.8
             Probability of crossover (must be in (0, 1)).
         _mut_rate : float, default=0.001
             Probability of mutation (must be in (0, 1)).
         _random_state : Optional[int], default=None
-            Random seed for reproducibility.
+            Random seed
         _best_solution : Optional[NDArray], default=None
             Solution with the highest fitness
         _best_fitness : float, default=-np.inf
@@ -56,8 +56,8 @@ class GAClustering:
     def __init__(
         self,
         clusters: int,
-        pop_size: int = 30,
-        max_gen: int = 40,
+        pop_size: int = 100,
+        max_gen: int = 100,
         cross_rate: float = 0.8,
         mut_rate: float = 0.001,
         random_state: Optional[int] = None
@@ -74,9 +74,9 @@ class GAClustering:
         ----------
         clusters : int
             Number of clusters (must be ≥ 2).
-        pop_size : int, default=30
+        pop_size : int, default=100
             Number of chromosomes in the population (must be > 0).
-        max_gen : int, default=40
+        max_gen : int, default=100
             Maximum number of generations (must be > 0).
         cross_rate : float, default=0.8
             Probability of crossover (must be in (0, 1)).
